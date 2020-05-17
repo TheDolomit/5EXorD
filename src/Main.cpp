@@ -104,21 +104,6 @@ int main()
 
 		clear_console();
 
-		std::ifstream stream(filepath);
-
-		if (!stream)
-		{
-			std::cerr << "Unable to find file with filepath: '" << filepath << "'!\n";
-			std::cin.get();
-			return 0;
-		}
-
-		std::ostringstream contents;
-
-		contents << stream.rdbuf();
-
-		stream.close();
-
 		std::cout << "Please supply a seed: ";
 		std::getline(std::cin, choice);
 
@@ -140,9 +125,18 @@ int main()
 
 		clear_console();
 
+		auto encrypted = EXorD::EncryptFileContents(filepath, seed, modifier, amplifier);
+
+		if (encrypted.empty())
+		{
+			std::cerr << "[ERROR]: Encryption returned an empty string: the file could not be found or was empty!";
+			std::cin.get();
+			return -1;
+		}
+
 		std::ofstream ofstream(filepath);
 
-		ofstream << EXorD::Encrypt(contents.str(), seed, modifier, amplifier);
+		ofstream << encrypted;
 
 		std::cout << "Done.\n";
 
@@ -161,21 +155,6 @@ int main()
 
 		clear_console();
 
-		std::ifstream stream(filepath);
-
-		if (!stream)
-		{
-			std::cerr << "Unable to find file with filepath: '" << filepath << "'!\n";
-			std::cin.get();
-			return 0;
-		}
-
-		std::ostringstream contents;
-
-		contents << stream.rdbuf();
-
-		stream.close();
-
 		std::cout << "Please supply a seed: ";
 		std::getline(std::cin, choice);
 
@@ -197,9 +176,18 @@ int main()
 
 		clear_console();
 
+		auto decrypted = EXorD::DecryptFileContents(filepath, seed, modifier, amplifier);
+
+		if (decrypted.empty())
+		{
+			std::cerr << "[ERROR]: Decryption returned an empty string: the file could not be found or was empty!";
+			std::cin.get();
+			return -1;
+		}
+
 		std::ofstream ofstream(filepath);
 
-		ofstream << EXorD::Decrypt(contents.str(), seed, modifier, amplifier);
+		ofstream << decrypted;
 
 		std::cout << "Done.\n";
 
