@@ -8,6 +8,9 @@ namespace EXorD
 {
 	static std::string Encrypt(const std::string& input, uint64_t seed, uint64_t modifier, uint64_t amplifier)
 	{
+		if (input.empty())
+			return "";
+
 		// Generate a pseudo-random number that will be used throughout the encryption process
 		std::mt19937_64 rng(std::random_device{}());
 		const std::uniform_int_distribution<uint64_t> uid(0, UINT_MAX ^ (modifier * -1)); // If we do a basic unary '-' then we get an error
@@ -22,16 +25,17 @@ namespace EXorD
 		// Generate a key specific to this seed, modifier and amplifier combination
 		std::string special = [&]
 		{
-			// Generate five numbers that are guaranteed to be different for each SMA combination
+			// Generate six numbers that are guaranteed to be different for each SMA combination
 			
 			const size_t secret1 = seed ^ modifier ^ amplifier ^ random;
-			const size_t secret2 = random + (((amplifier == 0) ? 1 : amplifier) * -1);
-			const size_t secret3 = secret2 & secret1;
-			const size_t secret4 = modifier | (secret3 & seed);
+			const size_t secret2 = random ^ (((amplifier == 0) ? 1 : amplifier) * -1);
+			const size_t secret3 = secret2 | secret1 + seed;
+			const size_t secret4 = modifier ^ (secret3 | seed);
+			const size_t secret5 = ((seed / modifier) & amplifier) ^ secret4;
 			rng.seed(secret4);
-			const size_t secret5 = gen_rand();
+			const size_t secret6 = gen_rand() ^ secret5;
 
-			return std::to_string(secret5) + std::to_string(secret4) + std::to_string(secret1);
+			return std::to_string(secret6) + std::to_string(secret5) + std::to_string(secret4) + std::to_string(secret1);
 		}();
 
 		// Now that we have this sorted, we need to build our final string
@@ -61,7 +65,7 @@ namespace EXorD
 		size_t final_xor = uidfrom_0_to_127(rng);
 
 		for (size_t i = 0; i < special.length(); i += 2)
-			final_xor ^= std::atoi(special.substr(i, 2).c_str());
+			final_xor ^= special[i] | special[i + 1];
 
 		// Perform XOR operations on all the characters of our input string
 		for (char c : input)
