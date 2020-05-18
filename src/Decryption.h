@@ -5,6 +5,7 @@
 #include <sstream>
 #include <filesystem>
 #include <fstream>
+#include <regex>
 
 namespace EXorD
 {
@@ -229,6 +230,8 @@ namespace EXorD
 			result << actual_char;
 		}
 
-		return result.str();
+		static const std::regex crlf = std::regex("\r\n");
+
+		return std::regex_replace(result.str(), crlf, "\n");
 	}
 }
