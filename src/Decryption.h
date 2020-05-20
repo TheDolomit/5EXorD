@@ -42,13 +42,14 @@ namespace EXorD
 		{
 			const size_t secret1 = seed ^ modifier ^ amplifier ^ random;
 			const size_t secret2 = random ^ (((amplifier == 0) ? 1 : amplifier) * -1);
-			const size_t secret3 = secret2 | secret1 + seed;
-			const size_t secret4 = modifier ^ (secret3 | seed);
+			const size_t secret3 = secret2 | secret1 + amplifier;
+			const size_t secret4 = modifier ^ (secret3 + seed);
 			const size_t secret5 = ((seed / modifier) & amplifier) ^ secret4;
-			rng.seed(secret4);
-			const size_t secret6 = gen_rand() ^ secret5;
+			const size_t secret6 = ((seed / amplifier) + modifier) ^ secret5;
+			rng.seed(secret5 + secret6);
+			const size_t secret7 = gen_rand() ^ (secret5 + secret6);
 
-			return std::to_string(secret6) + std::to_string(secret5) + std::to_string(secret4) + std::to_string(secret1);
+			return std::to_string(secret7) + std::to_string(secret6) + std::to_string(secret5) + std::to_string(secret1);
 		}();
 
 		// Now that we have this sorted, we need to build our final string
@@ -159,13 +160,14 @@ namespace EXorD
 		{
 			const size_t secret1 = seed ^ modifier ^ amplifier ^ random;
 			const size_t secret2 = random ^ (((amplifier == 0) ? 1 : amplifier) * -1);
-			const size_t secret3 = secret2 | secret1 + seed;
-			const size_t secret4 = modifier ^ (secret3 | seed);
+			const size_t secret3 = secret2 | secret1 + amplifier;
+			const size_t secret4 = modifier ^ (secret3 + seed);
 			const size_t secret5 = ((seed / modifier) & amplifier) ^ secret4;
-			rng.seed(secret4);
-			const size_t secret6 = gen_rand() ^ secret5;
+			const size_t secret6 = ((seed / amplifier) + modifier) ^ secret5;
+			rng.seed(secret5 + secret6);
+			const size_t secret7 = gen_rand() ^ (secret5 + secret6);
 
-			return std::to_string(secret6) + std::to_string(secret5) + std::to_string(secret4) + std::to_string(secret1);
+			return std::to_string(secret7) + std::to_string(secret6) + std::to_string(secret5) + std::to_string(secret1);
 		}();
 
 		// Now that we have this sorted, we need to build our final string
