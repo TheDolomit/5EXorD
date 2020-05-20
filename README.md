@@ -1,5 +1,5 @@
-# 5EXorD - what is it?
-5EXorD is a lossless string encryption system developed by TheDolomit/Vhyrro.
+# EXorD - what is it?
+EXorD is a lossless string encryption system developed by TheDolomit/Vhyrro.
 Originally created as a joke, I realized that this encryption system has some potential, so I decided to share it!
 # How safe is it?
 EXorD uses a 192bit (3x64bit) encryption key to encrypt your message, and even uses random number generators to ensure that no two encryptions will be the same.
